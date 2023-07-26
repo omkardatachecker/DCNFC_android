@@ -1,5 +1,21 @@
+buildscript {
+    ext.kotlin_version = '1.7.20'
+    repositories {
+        google()
+        mavenCentral()
+        mavenLocal()            // << --- ADD This
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:7.1.3'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+
 plugins {
     id 'com.android.library'
+    id 'maven-publish'
 }
 
 android {
@@ -18,12 +34,24 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            consumerProguardFiles 'consumer-rules.pro'
         }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)        // << --- ADD This
+    }
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17            // << --- ADD This
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 dependencies {
@@ -54,4 +82,20 @@ dependencies {
     implementation 'com.github.mhshams:jnbis:1.1.0'
     implementation 'com.google.code.gson:gson:2.8.8'
 
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = 'com.github.omkardatachecker'
+            artifactId = 'DCNFC_android'
+            version = "1.0"
+            pom {
+                description = 'Test Desc'
+            }
+        }
+    }
+    repositories {               // << --- ADD This
+        mavenLocal()
+    }
 }
