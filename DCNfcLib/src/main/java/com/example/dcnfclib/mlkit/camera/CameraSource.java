@@ -20,6 +20,7 @@ import com.example.dcnfclib.mlkit.other.FrameMetadata;
 import com.example.dcnfclib.mlkit.other.GraphicOverlay;
 import com.example.dcnfclib.mlkit.text.TextRecognitionProcessor;
 import com.google.android.gms.common.images.Size;
+import com.google.mlkit.common.MlKitException;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -709,6 +710,33 @@ public class CameraSource {
                     camera.addCallbackBuffer(data.array());
                 }
             }
+        }
+    }
+
+    public void processImageNew(ByteBuffer data, TextRecognitionProcessor.ResultListener resultListener) {
+        if(camera == null) {
+            try {
+                createCamera();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        if (frameProcessor == null) {
+            frameProcessor = new TextRecognitionProcessor(resultListener);
+        }
+        try {
+            frameProcessor.processDocument(
+                    data,
+                    new FrameMetadata.Builder()
+                            .setWidth(previewSize.getWidth())
+                            .setHeight(previewSize.getHeight())
+                            .setRotation(rotation)
+                            .setCameraFacing(facing)
+                            .build(),
+                    graphicOverlay);
+        } catch (MlKitException e) {
+            throw new RuntimeException(e);
         }
     }
 
