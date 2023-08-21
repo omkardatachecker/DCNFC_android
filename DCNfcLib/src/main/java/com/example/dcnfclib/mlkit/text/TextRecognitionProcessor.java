@@ -46,13 +46,14 @@ public class TextRecognitionProcessor {
 
     public static final String TYPE_ID_CARD = "I<";
 
-    public static final String ID_CARD_TD_1_LINE_1_REGEX = "([A|C|I][A-Z0-9<]{1})([A-Z]{3})([A-Z0-9<]{25})";
+    public static final String ID_CARD_TD_1_LINE_1_REGEX = "([A|C|I]<)([A-Z]{3})([A-Z0-9<]{25})";
 
     public static final String ID_CARD_TD_1_LINE_2_REGEX = "([0-9]{6})([0-9]{1})([M|F|X|<]{1})([0-9]{6})([0-9]{1})([A-Z]{3})([A-Z0-9<]{11})([0-9]{1})";
 
     public static final String ID_CARD_TD_1_LINE_3_REGEX = "([A-Z0-9<]{30})";
 
-    public static final String PASSPORT_TD_3_LINE_1_REGEX = "(P[A-Z0-9<]{1})([A-Z]{3})([A-Z0-9<]{39})";
+//    public static final String PASSPORT_TD_3_LINE_1_REGEX = "(P[A-Z0-9<]{1})([A-Z]{3})([A-Z0-9<]{39})";
+    public static final String PASSPORT_TD_3_LINE_1_REGEX = "(P<)([A-Z]{3})([A-Z0-9<]{39})";
 
     public static final String PASSPORT_TD_3_LINE_2_REGEX = "([A-Z0-9<]{9})([0-9]{1})([A-Z]{3})([0-9]{6})([0-9]{1})([M|F|X|<]{1})([0-9]{6})([0-9]{1})([A-Z0-9<]{14})([0-9<]{1})([0-9]{1})";
 
@@ -225,7 +226,7 @@ public class TextRecognitionProcessor {
 
                 MRZInfo mrzInfo = buildTempMrz(documentNumber, dateOfBirthDay, expiryDate);
 
-                if (mrzInfo != null)
+                if(mrzInfo != null)
                     Log.d(TAG, "Calling finishScanning2: " + mrzInfo.getDocumentNumber());
                     finishScanning(mrzInfo);
                 } else {

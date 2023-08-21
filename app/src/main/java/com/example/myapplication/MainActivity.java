@@ -1,7 +1,6 @@
 package com.example.myapplication;
 
 
-import static com.example.dcnfclib.DCNFCLib.E_DOCUMENT;
 import static com.example.myapplication.db.DBHelper.COLUMN_NAME;
 import static com.example.myapplication.db.DBHelper.ID;
 import static com.example.myapplication.db.DBHelper.TABLE_NAME;
@@ -28,15 +27,15 @@ import android.widget.Button;
 import com.example.dcnfclib.DCNFCLib;
 import com.example.dcnfclib.model.Constants;
 import com.example.dcnfclib.model.EDocument;
-import com.example.dcnfclib.ui.CaptureActivity;
 import com.example.myapplication.db.DBHelper;
 import com.example.myapplication.viewmodel.ImageDataViewModel;
 import com.google.gson.Gson;
 
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
+import org.jmrtd.lds.icao.MRZInfo;
 
-public class MainActivity extends AppCompatActivity implements DCNFCLib.DCNFCLibResultListnerClient {
+import java.nio.ByteBuffer;
+
+public class MainActivity extends AppCompatActivity implements DCNFCLib.DCNFCLibResultListnerClient, DCNFCLib.DCOCRResultListener {
     private Button scanDocumentButton;
     private Button documentCaptureButton;
     private ActivityResultContracts.StartActivityForResult startActivityForResult;
@@ -88,19 +87,10 @@ public class MainActivity extends AppCompatActivity implements DCNFCLib.DCNFCLib
                     Intent returnIntent = result.getData();
                     long imageData = returnIntent.getLongExtra(IMAGE_DATA, 1);
                     Log.d("MainActivity", "Received image data is : " + imageData);
-//                    Gson gson = new Gson();
-//                    EDocument eDocument = gson.fromJson(returnIntent.getStringExtra(E_DOCUMENT), EDocument.class);
-//                    Log.d("activityResultLauncher", "Name of the person is: "+eDocument.getPersonDetails().getName());
-//                    dcnfcLibResultListnerClient.onSuccess(eDocument);
 
                     DBHelper dbHelper = new DBHelper(MainActivity.this);
                     SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-                    String[] projection = { COLUMN_NAME };
-                    String selection =  ID + " = " + imageData;
-                    String[] selectionArgs = { String.valueOf(1) };
-
-//                    Cursor cursor = db.query(TABLE_NAME, projection, selection, selectionArgs, null, null, null);
                     Cursor cursor = db.query(TABLE_NAME, null, null, null, null, null, null);
 
                     String data = "";
@@ -127,8 +117,7 @@ public class MainActivity extends AppCompatActivity implements DCNFCLib.DCNFCLib
     }
 
     void scanCapturedDoc(String data){
-        ByteBuffer byteBuffer = convert(StringToBitMap(data));
-        dcnfcLib.scanImage(data, MainActivity.this);
+        dcnfcLib.scanImage(data, this);
     }
 
     private void openDocumentCaptureActivity() {
@@ -155,6 +144,11 @@ public class MainActivity extends AppCompatActivity implements DCNFCLib.DCNFCLib
     @Override
     public void onSuccess(EDocument eDocument) {
         Log.d("MainActivity", eDocument.getPersonDetails().getName());
+    }
+
+    @Override
+    public void onSuccessMRZScan(MRZInfo mrzInfo) {
+        Log.d("MainActivity", "onSuccessMRZScan : " + mrzInfo.getDocumentNumber());
     }
 
     @Override

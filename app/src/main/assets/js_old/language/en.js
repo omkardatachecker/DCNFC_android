@@ -1,0 +1,18 @@
+var LANGUAGE = {
+    "start_prompt": "Tap to start",
+    "flip": "Flip the document.",
+    "flip_frontside": "Flip the document to the frontside.",
+    "flip_backside": "Flip the document to the backside.",
+    "std_msg_0": "Fill the preview window.",
+    "std_msg_1": "The 4 corners of the document \nare not detected. Use \na black background for contrast.",
+    "exp_dark": "The image is too dark.\nFind an environment with more light.",
+    "exp_light": "The image is too light.\nFind an environment with less light.",
+    "blur": "Blur detected, \nplease hold still.",
+    "glare": "Glare detected, \ntilt the document slightly.",
+    "size": "Bring the document closer.",
+    "focus": "Focus on document.",
+    "approval_prompt": "Is the image right?",
+    "retry": "Try again",
+    "confirm": "Accept",
+    "capture_error": "We konden geen afbeelding vastleggen.\nToegang tot de camera is vereist.",
+}
