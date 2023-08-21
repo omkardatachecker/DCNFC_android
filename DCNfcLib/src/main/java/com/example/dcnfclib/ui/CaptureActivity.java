@@ -57,11 +57,6 @@ public class CaptureActivity extends AppCompatActivity implements TextRecognitio
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_capture);
 
-        Log.d("****Start", "CaptureActivity Started");
-
-//        actionBar = getSupportActionBar();
-//        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-//        actionBar.setCustomView(R.layout.action_bar_title);
 
         preview = findViewById(R.id.camera_source_preview);
         if (preview == null) {
@@ -71,9 +66,6 @@ public class CaptureActivity extends AppCompatActivity implements TextRecognitio
         if (graphicOverlay == null) {
             Log.d(TAG, "graphicOverlay is null");
         }
-
-//        createCameraSource();
-//        startCameraSource();
 
         dcnfcLibInternal = this;
         requestPermissionForCamera();
@@ -111,7 +103,6 @@ public class CaptureActivity extends AppCompatActivity implements TextRecognitio
         if (cameraSource != null) {
             cameraSource.release();
         }
-        Log.d("****Destory", "Sestrouing capture Activity. Currnt value of ");
     }
 
     private void createCameraSource() {
@@ -144,18 +135,11 @@ public class CaptureActivity extends AppCompatActivity implements TextRecognitio
 
     @Override
     public void onSuccess(MRZInfo mrzInfo) {
-//        Toast.makeText(this, "MRZ Info read Success" + mrzInfo.getDocumentNumber(), Toast.LENGTH_LONG).show();
         Log.d("MRZ Info read Success", "Success: " + mrzInfo.getDocumentNumber());
         Intent returnIntent = new Intent();
         returnIntent.putExtra(MRZ_RESULT, mrzInfo);
         setResult(Activity.RESULT_OK, returnIntent);
         finish();
-
-//        Intent intent = new Intent(this, ScanMRZActivity.class);
-////        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_TASK_ON_HOME);
-//        intent.putExtra(MRZ_RESULT, mrzInfo);
-//        startActivity(intent);
-////        this.finish();
     }
 
     @Override

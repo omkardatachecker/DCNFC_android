@@ -46,13 +46,14 @@ public class TextRecognitionProcessor {
 
     public static final String TYPE_ID_CARD = "I<";
 
-    public static final String ID_CARD_TD_1_LINE_1_REGEX = "([A|C|I][A-Z0-9<]{1})([A-Z]{3})([A-Z0-9<]{25})";
+    public static final String ID_CARD_TD_1_LINE_1_REGEX = "([A|C|I]<)([A-Z]{3})([A-Z0-9<]{25})";
 
     public static final String ID_CARD_TD_1_LINE_2_REGEX = "([0-9]{6})([0-9]{1})([M|F|X|<]{1})([0-9]{6})([0-9]{1})([A-Z]{3})([A-Z0-9<]{11})([0-9]{1})";
 
     public static final String ID_CARD_TD_1_LINE_3_REGEX = "([A-Z0-9<]{30})";
 
-    public static final String PASSPORT_TD_3_LINE_1_REGEX = "(P[A-Z0-9<]{1})([A-Z]{3})([A-Z0-9<]{39})";
+//    public static final String PASSPORT_TD_3_LINE_1_REGEX = "(P[A-Z0-9<]{1})([A-Z]{3})([A-Z0-9<]{39})";
+    public static final String PASSPORT_TD_3_LINE_1_REGEX = "(P<)([A-Z]{3})([A-Z0-9<]{39})";
 
     public static final String PASSPORT_TD_3_LINE_2_REGEX = "([A-Z0-9<]{9})([0-9]{1})([A-Z]{3})([0-9]{6})([0-9]{1})([M|F|X|<]{1})([0-9]{6})([0-9]{1})([A-Z0-9<]{14})([0-9<]{1})([0-9]{1})";
 
@@ -91,6 +92,23 @@ public class TextRecognitionProcessor {
         detectInVisionImage(inputImage, frameMetadata, graphicOverlay);
     }
 
+    public void processDocument(ByteBuffer data, FrameMetadata frameMetadata, GraphicOverlay graphicOverlay) throws MlKitException {
+
+        if (shouldThrottle.get()) {
+            return;
+        }
+
+        InputImage inputImage = InputImage.fromByteBuffer(data,
+                frameMetadata.getWidth(),
+                frameMetadata.getHeight(),
+                frameMetadata.getRotation(),
+                InputImage.IMAGE_FORMAT_NV21);
+
+
+
+        detectInVisionImage(inputImage, frameMetadata, graphicOverlay);
+    }
+
     //endregion
 
     //region ----- Helper Methods -----
@@ -100,7 +118,7 @@ public class TextRecognitionProcessor {
     }
 
 
-    protected void onSuccess(@NonNull Text results, @NonNull FrameMetadata frameMetadata, @NonNull GraphicOverlay graphicOverlay) {
+    public void onSuccess(@NonNull Text results, @NonNull FrameMetadata frameMetadata, @NonNull GraphicOverlay graphicOverlay) {
 
         graphicOverlay.clear();
 
@@ -208,7 +226,7 @@ public class TextRecognitionProcessor {
 
                 MRZInfo mrzInfo = buildTempMrz(documentNumber, dateOfBirthDay, expiryDate);
 
-                if (mrzInfo != null)
+                if(mrzInfo != null)
                     Log.d(TAG, "Calling finishScanning2: " + mrzInfo.getDocumentNumber());
                     finishScanning(mrzInfo);
                 } else {
@@ -219,12 +237,38 @@ public class TextRecognitionProcessor {
 
 
 
-    protected void onFailure(@NonNull Exception e) {
+    public void onFailure(@NonNull Exception e) {
         Log.w(TAG, "Text detection failed." + e);
         resultListener.onError(e);
     }
 
     private void detectInVisionImage(InputImage image, final FrameMetadata metadata, final GraphicOverlay graphicOverlay) {
+
+        detectInImage(image)
+                .addOnSuccessListener(
+                        new OnSuccessListener<Text>() {
+                            @Override
+                            public void onSuccess(Text results) {
+                                shouldThrottle.set(false);
+                                TextRecognitionProcessor.this.onSuccess(results, metadata, graphicOverlay);
+                                Log.d(TAG, "TEXT RESULT" + results.getText());
+                            }
+                        })
+                .addOnFailureListener(
+                        new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                shouldThrottle.set(false);
+                                Log.d(TAG, "EXCEPTION" + e.getLocalizedMessage());
+                                TextRecognitionProcessor.this.onFailure(e);
+                            }
+                        });
+        // Begin throttling until this frame of input has been processed, either in onSuccess or
+        // onFailure.
+        shouldThrottle.set(true);
+    }
+
+    public void detectInVisionImagePublic(InputImage image, final FrameMetadata metadata, final GraphicOverlay graphicOverlay) {
 
         detectInImage(image)
                 .addOnSuccessListener(
