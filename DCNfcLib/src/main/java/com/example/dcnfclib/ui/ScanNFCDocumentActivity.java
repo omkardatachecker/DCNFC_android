@@ -174,19 +174,19 @@ public class ScanNFCDocumentActivity extends AppCompatActivity {
                 service.open();
 
                 boolean paceSucceeded = false;
-                try {
-                    CardSecurityFile cardSecurityFile = new CardSecurityFile(service.getInputStream(PassportService.EF_CARD_SECURITY));
-                    Collection<SecurityInfo> securityInfoCollection = cardSecurityFile.getSecurityInfos();
-                    for (SecurityInfo securityInfo : securityInfoCollection) {
-                        if (securityInfo instanceof PACEInfo) {
-                            PACEInfo paceInfo = (PACEInfo) securityInfo;
-                            service.doPACE(bacKey, paceInfo.getObjectIdentifier(), PACEInfo.toParameterSpec(paceInfo.getParameterId()), null);
-                            paceSucceeded = true;
-                        }
-                    }
-                } catch (Exception e) {
-                    Log.w(TAG, e);
-                }
+//                try {
+//                    CardSecurityFile cardSecurityFile = new CardSecurityFile(service.getInputStream(PassportService.EF_CARD_SECURITY));
+//                    Collection<SecurityInfo> securityInfoCollection = cardSecurityFile.getSecurityInfos();
+//                    for (SecurityInfo securityInfo : securityInfoCollection) {
+//                        if (securityInfo instanceof PACEInfo) {
+//                            PACEInfo paceInfo = (PACEInfo) securityInfo;
+//                            service.doPACE(bacKey, paceInfo.getObjectIdentifier(), PACEInfo.toParameterSpec(paceInfo.getParameterId()), null);
+//                            paceSucceeded = true;
+//                        }
+//                    }
+//                } catch (Exception e) {
+//                    Log.w(TAG, e);
+//                }
 
                 service.sendSelectApplet(paceSucceeded);
 
