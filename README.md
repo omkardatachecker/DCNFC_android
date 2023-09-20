@@ -26,7 +26,7 @@ repositories {
 
 ```ruby
 	dependencies {
-	        implementation 'com.github.omkardatachecker:DCNFC_android:1.0'
+	        implementation 'com.github.omkardatachecker:DCNFC_android:1.2'
 	}
 ```
 
